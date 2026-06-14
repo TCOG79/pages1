@@ -1,0 +1,34 @@
+---
+description: กฎ UI/component Astro สำหรับ PAGES 1 NEWS
+globs: src/**/*.{astro,css,ts}
+alwaysApply: false
+---
+
+# Astro UI Rules
+
+## Components ที่มีอยู่
+
+ใช้ component เหล่านี้ ไม่สร้างซ้ำโดยไม่จำเป็น:
+
+- `ArticleImage` — แสดงรูป (local + remote)
+- `SourceAttribution` — อ้างอิงต้นทางท้ายหน้าข่าว
+- `LeadStory`, `ArticleCard`, `ColumnGrid`, `Divider`, `Masthead`
+
+## กฎสำคัญ
+
+- แสดงรูปผ่าน `ArticleImage` เสมอ (ไม่ใช้ `<img>` ตรงๆ)
+- หน้าข่าว `news/[slug].astro` ต้องมี `SourceAttribution` หลังเนื้อหา
+- หน้าหลัก: lead story + sidebar 3 เรื่อง + grid ที่เหลือ
+
+## Performance
+
+- Static HTML เป็นหลัก ไม่เพิ่ม client JS โดยไม่จำเป็น
+- ใช้ `data-astro-prefetch` บนลิงก์ข่าว
+- `loading="lazy"` สำหรับ thumbnail, `eager` สำหรับรูปหลัก
+
+## สไตล์หนังสือพิมพ์
+
+- หัวข้อ: serif (`Playfair Display`, `Noto Serif Thai`)
+- เนื้อหา: sans-serif (`Noto Sans Thai`)
+- Accent: `#8b0000`
+- พื้น: `#faf8f3`

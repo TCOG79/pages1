@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleImage from './ArticleImage.astro';
+import { formatThaiShortDate } from '../utils/format';
+
+interface Props {
+	article: CollectionEntry<'news'>;
+}
+
+const { article } = Astro.props;
+const { title, excerpt, category, image, publishedAt, author } = article.data;
+const slug = article.id;
+---
+
+<article class="lead-story">
+	<a class="lead-story__link" href={`/news/${slug}/`} data-astro-prefetch>
+		<ArticleImage
+			src={image}
+			alt={title}
+			width={800}
+			height={450}
+			loading="eager"
+			class="lead-story__image"
+		/>
+		<span class="category">{category}</span>
+		<h2 class="lead-story__title">{title}</h2>
+		<p class="lead-story__excerpt">{excerpt}</p>
+		<p class="lead-story__meta">
+			{formatThaiShortDate(publishedAt)} &mdash; {author}
+		</p>
+	</a>
+</article>

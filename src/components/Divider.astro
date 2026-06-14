@@ -1,0 +1,9 @@
+---
+interface Props {
+	variant?: 'single' | 'double';
+}
+
+const { variant = 'single' } = Astro.props;
+---
+
+<hr class:list={['divider', { 'divider--double': variant === 'double' }]} />

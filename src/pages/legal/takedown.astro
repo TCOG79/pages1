@@ -1,0 +1,52 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Masthead from '../../components/Masthead.astro';
+import { SITE_NAME } from '../../config/site';
+
+const contactEmail = 'legal@pages1.news';
+---
+
+<Layout title="แจ้งลบเนื้อหา" description={`ช่องทางแจ้งลบหรือแก้ไขเนื้อหาของ ${SITE_NAME}`}>
+	<Masthead />
+	<main class="legal-page">
+		<div class="container">
+			<a class="article-page__back" href="/">&larr; กลับหน้าหลัก</a>
+
+			<h1 class="legal-page__title">แจ้งลบเนื้อหา</h1>
+
+			<div class="legal-page__content">
+				<p>
+					หากท่านเป็นเจ้าของลิขสิทธิ์หรือตัวแทนโดยชอบธรรม และต้องการให้ลบหรือแก้ไขเนื้อหาบน {SITE_NAME}
+					กรุณาส่งคำร้องมาที่อีเมลด้านล่าง
+				</p>
+
+				<p class="legal-page__contact">
+					อีเมล:
+					<a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+				</p>
+
+				<h2>ข้อมูลที่ต้องระบุในคำร้อง</h2>
+				<ol>
+					<li>ชื่อและข้อมูลติดต่อของผู้ยื่นคำร้อง</li>
+					<li>URL ของเนื้อหาบน {SITE_NAME} ที่ต้องการให้ดำเนินการ</li>
+					<li>URL ของบทความต้นฉบับ (ถ้ามี)</li>
+					<li>เหตุผลในการร้องขอ (เช่น ละเมิดลิขสิทธิ์ ข้อมูลไม่ถูกต้อง)</li>
+					<li>หลักฐานแสดงสิทธิ์ในเนื้อหา (ถ้ามี)</li>
+				</ol>
+
+				<h2>ระยะเวลาดำเนินการ</h2>
+				<p>
+					เราจะตรวจสอบคำร้องและดำเนินการภายใน 7 วันทำการ หลังจากได้รับข้อมูลครบถ้วน
+					อาจมีการลบ แก้ไข หรือเพิ่มการอ้างอิงต้นทางตามความเหมาะสม
+				</p>
+
+				<p class="legal-page__updated">อัปเดตล่าสุด: 10 มิถุนายน 2569</p>
+			</div>
+
+			<nav class="legal-page__nav" aria-label="หน้ากฎหมาย">
+				<a href="/legal/disclaimer/">ข้อจำกัดความรับผิดชอบ</a>
+				<a href="/legal/copyright/">นโยบายลิขสิทธิ์</a>
+			</nav>
+		</div>
+	</main>
+</Layout>

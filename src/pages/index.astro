@@ -1,0 +1,129 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Masthead from '../components/Masthead.astro';
+import LeadStory from '../components/LeadStory.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import CategoryHighlights from '../components/CategoryHighlights.astro';
+import ColumnGrid from '../components/ColumnGrid.astro';
+import Divider from '../components/Divider.astro';
+import { NEWS_CATEGORIES_LABEL } from '../config/categories';
+import { SITE_NAME, SITE_URL } from '../config/site';
+import { getEditionArticles, pickCategoryHighlights } from '../utils/editorial';
+import { formatThaiDate } from '../utils/format';
+import { absoluteUrl } from '../utils/seo';
+
+const jsonLd = [
+	{
+		'@context': 'https://schema.org',
+		'@type': 'WebSite',
+		name: SITE_NAME,
+		url: SITE_URL,
+		inLanguage: 'th-TH',
+	},
+	{
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		name: SITE_NAME,
+		url: SITE_URL,
+		logo: absoluteUrl('/images/logo.png'),
+	},
+];
+
+const allNews = (await getCollection('news')).sort(
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+
+const { articles: editionNews, editionDate, isToday } = getEditionArticles(allNews);
+
+const featured = editionNews.find((article) => article.data.featured);
+const leadStory = featured ?? editionNews[0];
+const leadId = leadStory?.id;
+
+/** แถบข่าวล่าสุด — จองก่อนหมวด เพื่อไม่ให้ถูกกินหมดเมื่อข่าววันนั้นมีไม่มาก */
+const sidebarArticles = editionNews
+	.filter((article) => article.id !== leadId)
+	.slice(0, 3);
+
+const categoryHighlights = pickCategoryHighlights(
+	editionNews,
+	new Set([
+		...(leadId ? [leadId] : []),
+		...sidebarArticles.map((article) => article.id),
+	]),
+);
+const usedIds = new Set([
+	...(leadId ? [leadId] : []),
+	...sidebarArticles.map((article) => article.id),
+	...categoryHighlights.map((article) => article.id),
+]);
+const mainArticles = editionNews.filter((article) => !usedIds.has(article.id));
+---
+
+<Layout
+	title={SITE_NAME}
+	description={`ข่าวสารรายวัน อัปเดตทุกวัน — ${NEWS_CATEGORIES_LABEL}`}
+	jsonLd={jsonLd}
+>
+	<Masthead />
+	<main class="front-page">
+		<div class="container">
+			{
+				editionNews.length === 0 ? (
+					<div class="front-page__empty">
+						<p>ยังไม่มีข่าวในระบบ</p>
+						<p>
+							<a href="/archive/">ดูคลังข่าวย้อนหลัง</a>
+						</p>
+					</div>
+				) : (
+					<>
+						{
+							!isToday && (
+								<p class="front-page__edition-note">
+									ยังไม่มีข่าวประจำวันนี้ — แสดงข่าวล่าสุดวันที่ {formatThaiDate(editionDate)}
+								</p>
+							)
+						}
+						<div class="front-page__top">
+							<LeadStory article={leadStory} />
+							{
+								sidebarArticles.length > 0 && (
+									<aside class="front-page__sidebar" aria-label="ข่าวล่าสุด">
+										<h2 class="section-heading">ข่าวล่าสุด</h2>
+										{sidebarArticles.map((article) => (
+											<>
+												<ArticleCard article={article} variant="compact" />
+												<Divider />
+											</>
+										))}
+									</aside>
+								)
+							}
+						</div>
+
+						<Divider variant="double" />
+
+						<CategoryHighlights articles={categoryHighlights} />
+
+						{
+							mainArticles.length > 0 && (
+								<>
+									<Divider variant="double" />
+									<section aria-label="ข่าวอื่นๆ">
+										<h2 class="section-heading">ข่าวอื่นๆ</h2>
+										<ColumnGrid articles={mainArticles} />
+									</section>
+								</>
+							)
+						}
+
+						<p class="front-page__archive-link">
+							<a href="/archive/">คลังข่าว</a>
+						</p>
+					</>
+				)
+			}
+		</div>
+	</main>
+</Layout>

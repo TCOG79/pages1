@@ -1,0 +1,23 @@
+{
+  "name": "pages1",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "fetch-image": "node scripts/fetch-article-image.mjs",
+    "generate-audio": "node scripts/generate-article-audio.mjs",
+    "migrate-news-folders": "node scripts/migrate-news-to-date-folders.mjs",
+    "prebuild": "npm run generate-audio"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^6.4.5",
+    "node-edge-tts": "^1.2.10"
+  }
+}

@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Masthead from '../../components/Masthead.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import Divider from '../../components/Divider.astro';
+import { NEWS_CATEGORIES_LABEL } from '../../config/categories';
+import { SITE_NAME } from '../../config/site';
+
+export async function getStaticPaths({ paginate }) {
+	const allNews = (await getCollection('news')).sort(
+		(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+	);
+
+	return paginate(allNews, { pageSize: 10 });
+}
+
+const { page } = Astro.props;
+const articles = page.data;
+
+function pageUrl(pageNumber: number) {
+	return pageNumber === 1 ? '/archive/' : `/archive/${pageNumber}/`;
+}
+---
+
+<Layout
+	title={page.currentPage === 1 ? 'คลังข่าว' : `คลังข่าว — หน้า ${page.currentPage}`}
+	description={`รวมข่าวย้อนหลังทั้งหมดจาก ${SITE_NAME} — ${NEWS_CATEGORIES_LABEL}`}
+>
+	<Masthead />
+	<main class="archive-page">
+		<div class="container">
+			<header class="archive-page__header">
+				<h1 class="archive-page__title">คลังข่าว</h1>
+				<p class="archive-page__intro">
+					{
+						page.total === 0
+							? 'ข่าวทั้งหมดเรียงตามวันที่เผยแพร่'
+							: `แสดง ${page.start + 1}–${page.end + 1} จาก ${page.total} รายการ`
+					}
+				</p>
+			</header>
+
+			{
+				articles.length === 0 ? (
+					<p class="archive-page__empty">ยังไม่มีข่าวในคลัง</p>
+				) : (
+					<div class="archive-page__list">
+						{articles.map((article, index) => (
+							<>
+								<ArticleCard article={article} variant="horizontal" />
+								{index < articles.length - 1 && <Divider />}
+							</>
+						))}
+					</div>
+				)
+			}
+
+			{
+				page.lastPage > 1 && (
+					<nav class="archive-page__pagination" aria-label="การแบ่งหน้า">
+						{
+							page.url.prev ? (
+								<a class="archive-page__pagination-link" href={page.url.prev}>
+									ก่อนหน้า
+								</a>
+							) : (
+								<span class="archive-page__pagination-link archive-page__pagination-link--disabled">
+									ก่อนหน้า
+								</span>
+							)
+						}
+
+						<div class="archive-page__pagination-pages">
+							{
+								Array.from({ length: page.lastPage }, (_, i) => i + 1).map((pageNumber) => (
+									pageNumber === page.currentPage ? (
+										<span
+											class="archive-page__pagination-page archive-page__pagination-page--current"
+											aria-current="page"
+										>
+											{pageNumber}
+										</span>
+									) : (
+										<a class="archive-page__pagination-page" href={pageUrl(pageNumber)}>
+											{pageNumber}
+										</a>
+									)
+								))
+							}
+						</div>
+
+						{
+							page.url.next ? (
+								<a class="archive-page__pagination-link" href={page.url.next}>
+									ถัดไป
+								</a>
+							) : (
+								<span class="archive-page__pagination-link archive-page__pagination-link--disabled">
+									ถัดไป
+								</span>
+							)
+						}
+					</nav>
+				)
+			}
+
+			<p class="archive-page__back">
+				<a href="/">กลับหน้าหลัก</a>
+			</p>
+		</div>
+	</main>
+</Layout>

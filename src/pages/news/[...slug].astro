@@ -1,0 +1,141 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Masthead from '../../components/Masthead.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import ArticleDisclaimer from '../../components/ArticleDisclaimer.astro';
+import ArticleImage from '../../components/ArticleImage.astro';
+import ArticleListen from '../../components/ArticleListen.astro';
+import ReadOriginalCta from '../../components/ReadOriginalCta.astro';
+import SourceAttribution from '../../components/SourceAttribution.astro';
+import { SITE_NAME } from '../../config/site';
+import { formatThaiShortDate } from '../../utils/format';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { getNewsAudioUrlPath } from '../../utils/news-path';
+import { absoluteUrl } from '../../utils/seo';
+
+export async function getStaticPaths() {
+	const articles = await getCollection('news');
+	return articles.map((article) => ({
+		params: { slug: article.id },
+		props: { article },
+	}));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const {
+	title,
+	excerpt,
+	category,
+	image,
+	imageCredit,
+	imageRights,
+	sourceName,
+	sourceUrl,
+	publishedAt,
+	author,
+	originalAuthor,
+} = article.data;
+
+const reporter = originalAuthor ?? author;
+const showImageCredit = imageRights !== 'placeholder';
+
+const allNews = (await getCollection('news')).sort(
+	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+
+const relatedArticles = allNews
+	.filter((item) => item.id !== article.id && item.data.category === category)
+	.slice(0, 3);
+
+const articleUrl = absoluteUrl(`/news/${article.id}/`);
+
+const audioFilePath = join(process.cwd(), 'public', 'audio', 'news', `${article.id}.mp3`);
+const audioUrl = existsSync(audioFilePath) ? getNewsAudioUrlPath(article.id) : undefined;
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'NewsArticle',
+	headline: title,
+	description: excerpt,
+	image: [absoluteUrl(image)],
+	datePublished: publishedAt.toISOString(),
+	author: {
+		'@type': 'Person',
+		name: reporter,
+	},
+	publisher: {
+		'@type': 'Organization',
+		name: SITE_NAME,
+		logo: {
+			'@type': 'ImageObject',
+			url: absoluteUrl('/images/logo.png'),
+		},
+	},
+	mainEntityOfPage: {
+		'@type': 'WebPage',
+		'@id': articleUrl,
+	},
+	isBasedOn: sourceUrl,
+};
+---
+
+<Layout
+	title={title}
+	description={excerpt}
+	canonicalUrl={articleUrl}
+	alternateUrl={sourceUrl}
+	ogImage={image}
+	ogType="article"
+	jsonLd={jsonLd}
+>
+	<Masthead />
+	<article class="article-page">
+		<div class="container">
+			<a class="article-page__back" href="/">&larr; กลับหน้าหลัก</a>
+
+			<header class="article-page__header">
+				<span class="category">{category}</span>
+				<h1 class="article-page__title">{title}</h1>
+				<p class="article-page__meta">
+					{formatThaiShortDate(publishedAt)} &mdash; รายงานโดย {reporter} | ที่มา:{' '}
+					<a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName}</a>
+				</p>
+			</header>
+
+			<ArticleDisclaimer />
+
+			<ArticleImage
+				src={image}
+				alt={title}
+				loading="eager"
+				class="article-page__image"
+				imageCredit={showImageCredit ? imageCredit : undefined}
+				imageLinkUrl={showImageCredit ? sourceUrl : undefined}
+			/>
+
+			<ArticleListen audioUrl={audioUrl} />
+
+			<div class="article-page__content">
+				<Content />
+			</div>
+
+			<ReadOriginalCta sourceName={sourceName} sourceUrl={sourceUrl} />
+
+			<SourceAttribution sourceName={sourceName} sourceUrl={sourceUrl} />
+
+			{relatedArticles.length > 0 && (
+				<section class="related-articles">
+					<h2 class="related-articles__title">ข่าวที่เกี่ยวข้อง</h2>
+					<div class="related-articles__grid">
+						{relatedArticles.map((related) => (
+							<ArticleCard article={related} variant="horizontal" />
+						))}
+					</div>
+				</section>
+			)}
+		</div>
+	</article>
+</Layout>

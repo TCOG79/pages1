@@ -1,0 +1,49 @@
+---
+description: กฎโปรเจกต์ PAGES 1 NEWS — Astro 6 + Markdown content collections
+alwaysApply: true
+---
+
+# PAGES 1 NEWS — Project Rules
+
+## Brand & Stack
+
+- ชื่อแบรนด์: **หน้า1** (ค่าคงที่ใน `src/config/site.ts`)
+- Astro 6 SSG, TypeScript strict
+- Content Collections ผ่าน `src/content.config.ts`
+- ภาษาเนื้อหาข่าว: ภาษาไทย
+
+## โครงสร้างหลัก
+
+- ข่าว: `src/content/news/YYYY/MM/DD/{slug}.md` — โฟลเดอร์ตาม `publishedAt` (Asia/Bangkok), slug = ชื่อไฟล์ (ไม่มี `.md`), URL = `/news/YYYY/MM/DD/{slug}/`
+- Schema: `src/content.config.ts`
+- รูป local: `public/images/news/` → อ้างอิง `/images/news/...`
+- รูป remote: URL เต็มใน frontmatter `image`
+- Build output: `dist/` — ห้ามแก้ไฟล์ใน `dist/` โดยตรง
+
+## คำสั่ง
+
+```bash
+npm run dev             # localhost:4321
+npm run build           # prebuild: generate-audio แล้ว build ไป dist/
+npm run preview         # ทดสอบ production
+npm run generate-audio  # สร้าง MP3 เสียงอ่านข่าว (ขาด/stale เท่านั้น)
+```
+
+## Config
+
+- `devToolbar.enabled: false` ใน `astro.config.mjs`
+- `prefetch: true` สำหรับลิงก์ข่าว
+
+## Workflow เพิ่มข่าว
+
+1. สร้าง `src/content/news/YYYY/MM/DD/{slug}.md` ตาม template ใน `.cursor/skills/news-writer/article-template.md` (ใช้ `getNewsFilePath` จาก `src/utils/news-path.ts`)
+2. วางรูปใน `public/images/news/` (ถ้าใช้ local)
+3. รัน `npm run generate-audio` สร้างเสียงอ่าน → `public/audio/news/{articleId}.mp3`
+4. รัน `npm run build` ตรวจ validation (prebuild จะ generate เสียงที่ยังไม่มี/stale ให้อัตโนมัติ)
+
+## เสียงอ่านข่าว
+
+- MP3: `public/audio/news/{articleId}.mp3` — TTS จาก title + body (Microsoft Edge Neural, `th-TH-PremwadeeNeural`)
+- ปุ่ม "ฟังข่าว" บนหน้าข่าวแสดงเมื่อมีไฟล์ MP3
+- Dev: ต้องรัน `generate-audio` เองหลังเพิ่ม/แก้ข่าว
+- แก้เนื้อหา: regenerate อัตโนมัติเมื่อ `.md` ใหม่กว่า `.mp3` หรือ `npm run generate-audio -- --force`

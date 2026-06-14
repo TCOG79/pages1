@@ -1,0 +1,14 @@
+---
+interface Props {
+	sourceName: string;
+	sourceUrl: string;
+}
+
+const { sourceName, sourceUrl } = Astro.props;
+---
+
+<p class="read-original-cta">
+	<a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+		อ่านบทความฉบับเต็มที่ {sourceName} &rarr;
+	</a>
+</p>
