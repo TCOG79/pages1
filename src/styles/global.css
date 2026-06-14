@@ -123,6 +123,7 @@ h4 {
 	text-align: center;
 	border-bottom: 3px double var(--color-border);
 	background: linear-gradient(180deg, var(--color-paper-elevated) 0%, var(--color-paper) 100%);
+	padding: 1.25rem 0 1rem;
 }
 
 .masthead__inner {
@@ -130,9 +131,25 @@ h4 {
 	justify-content: center;
 }
 
+.masthead__identity {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
 .masthead__title {
 	margin: 0;
 	line-height: 0;
+}
+
+.masthead__date {
+	margin: 0;
+	font-family: var(--font-sans);
+	font-size: 1.125rem;
+	font-weight: 400;
+	color: var(--color-muted);
+	line-height: 1.4;
+	letter-spacing: 0.02em;
 }
 
 .masthead__brand {

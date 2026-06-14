@@ -1,20 +1,30 @@
 ---
 import { SITE_NAME } from '../config/site';
+import { formatThaiDateBangkok, getCalendarDateKey } from '../utils/format';
+
+const today = new Date();
+const dateKey = getCalendarDateKey(today);
+const dateLabel = formatThaiDateBangkok(today);
 ---
 
 <header class="masthead">
 	<div class="container masthead__inner">
-		<h1 class="masthead__title">
-			<a class="masthead__brand" href="/">
-				<img
-					class="masthead__logo"
-					src="/images/logo.png"
-					alt={SITE_NAME}
-					width="96"
-					height="96"
-					decoding="async"
-				/>
-			</a>
-		</h1>
+		<div class="masthead__identity">
+			<h1 class="masthead__title">
+				<a class="masthead__brand" href="/">
+					<img
+						class="masthead__logo"
+						src="/images/logo.png"
+						alt={SITE_NAME}
+						width="96"
+						height="96"
+						decoding="async"
+					/>
+				</a>
+			</h1>
+			<p class="masthead__date">
+				<time datetime={dateKey}>{dateLabel}</time>
+			</p>
+		</div>
 	</div>
 </header>
