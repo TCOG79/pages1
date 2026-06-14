@@ -1,0 +1,23 @@
+---
+import { SITE_NAME } from '../config/site';
+---
+
+<!doctype html>
+<html lang="th">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, follow" />
+		<meta http-equiv="refresh" content="0;url=/" />
+		<link rel="canonical" href="/" />
+		<title>ไม่พบหน้านี้ | {SITE_NAME}</title>
+		<script is:inline>
+			location.replace('/');
+		</script>
+	</head>
+	<body>
+		<p>
+			ไม่พบหน้านี้ — กำลังพาไป <a href="/">หน้าหลัก</a>
+		</p>
+	</body>
+</html>

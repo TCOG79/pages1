@@ -13,7 +13,9 @@ const news = defineCollection({
 			excerpt: z.string(),
 			category: z.enum(NEWS_CATEGORIES),
 			featured: z.boolean().default(false),
-			image: z.string(),
+			image: z.string().refine((v) => v.startsWith('/images/'), {
+				message: 'image must be a local path under /images/',
+			}),
 			imageCredit: z.string().optional(),
 			imageSourceUrl: z.string().url().optional(),
 			imageRights: imageRights.default('source_thumbnail'),

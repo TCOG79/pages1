@@ -1,0 +1,2 @@
+# Netlify: ใช้ 404.html (จาก Astro build) เมื่อ path ไม่มีอยู่
+/*    /404.html    404

@@ -8,6 +8,7 @@
  * imageRights: source_thumbnail | press_release (default: source_thumbnail)
  */
 
+import { lookup } from 'node:dns/promises';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,8 +17,112 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const OUT_DIR = join(ROOT, 'public', 'images', 'news');
 const MAX_WIDTH = 800;
+const MAX_REDIRECTS = 5;
 
 const PLACEHOLDER = (slug) => `https://picsum.photos/seed/${slug}/800/500`;
+
+const BLOCKED_HOSTNAMES = new Set(['localhost', '127.0.0.1', '0.0.0.0', '[::1]', '::1']);
+
+function isPrivateIpv4(a, b) {
+	if (a === 10 || a === 127 || a === 0) return true;
+	if (a === 169 && b === 254) return true;
+	if (a === 172 && b >= 16 && b <= 31) return true;
+	if (a === 192 && b === 168) return true;
+	return false;
+}
+
+function isPrivateIp(hostname) {
+	const ipv4Match = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+	if (ipv4Match) {
+		const octets = ipv4Match.slice(1, 5).map(Number);
+		if (octets.some((n) => n > 255)) return true;
+		return isPrivateIpv4(octets[0], octets[1]);
+	}
+
+	const lower = hostname.toLowerCase();
+	if (lower === '::1') return true;
+	if (lower.startsWith('fe80:') || lower.startsWith('fc') || lower.startsWith('fd')) return true;
+	return false;
+}
+
+function parseSafeUrl(urlString) {
+	let parsed;
+	try {
+		parsed = new URL(urlString);
+	} catch {
+		throw new Error(`Invalid URL: ${urlString}`);
+	}
+
+	if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+		throw new Error(`Unsupported protocol: ${parsed.protocol}`);
+	}
+
+	const hostname = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, '');
+
+	if (BLOCKED_HOSTNAMES.has(hostname)) {
+		throw new Error(`Blocked hostname: ${hostname}`);
+	}
+
+	if (
+		hostname.endsWith('.local') ||
+		hostname.endsWith('.internal') ||
+		hostname.endsWith('.localhost')
+	) {
+		throw new Error(`Blocked hostname: ${hostname}`);
+	}
+
+	if (isPrivateIp(hostname)) {
+		throw new Error(`Blocked private IP: ${hostname}`);
+	}
+
+	return parsed;
+}
+
+async function assertSafeUrl(urlString) {
+	const parsed = parseSafeUrl(urlString);
+
+	if (!isPrivateIp(parsed.hostname)) {
+		try {
+			const { address } = await lookup(parsed.hostname, { verbatim: true });
+			if (isPrivateIp(address)) {
+				throw new Error(`Blocked private IP: ${address}`);
+			}
+		} catch (error) {
+			if (error instanceof Error && error.message.startsWith('Blocked private IP')) {
+				throw error;
+			}
+			if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOTFOUND') {
+				throw new Error(`Host not found: ${parsed.hostname}`);
+			}
+			throw error;
+		}
+	}
+
+	return parsed;
+}
+
+async function safeFetch(urlString, options = {}) {
+	let currentUrl = (await assertSafeUrl(urlString)).href;
+	let redirects = 0;
+
+	while (true) {
+		const response = await fetch(currentUrl, { ...options, redirect: 'manual' });
+
+		if (response.status >= 300 && response.status < 400) {
+			const location = response.headers.get('location');
+			if (!location) {
+				throw new Error('Redirect without location header');
+			}
+			if (++redirects > MAX_REDIRECTS) {
+				throw new Error('Too many redirects');
+			}
+			currentUrl = (await assertSafeUrl(new URL(location, currentUrl).href)).href;
+			continue;
+		}
+
+		return response;
+	}
+}
 
 function extractMetaImage(html, baseUrl) {
 	const patterns = [
@@ -54,12 +159,11 @@ async function tryImportSharp() {
 }
 
 async function downloadImage(imageUrl) {
-	const response = await fetch(imageUrl, {
+	const response = await safeFetch(imageUrl, {
 		headers: {
 			'User-Agent': 'PAGES1News/1.0 (thumbnail fetch; +https://pages1.news)',
 			Accept: 'image/*',
 		},
-		redirect: 'follow',
 	});
 
 	if (!response.ok) {
@@ -92,12 +196,11 @@ async function saveThumbnail(buffer, outPath) {
 async function fetchArticleImage(slug, sourceUrl, imageRights = 'source_thumbnail') {
 	await mkdir(OUT_DIR, { recursive: true });
 
-	const pageResponse = await fetch(sourceUrl, {
+	const pageResponse = await safeFetch(sourceUrl, {
 		headers: {
 			'User-Agent': 'PAGES1News/1.0 (og:image fetch; +https://pages1.news)',
 			Accept: 'text/html',
 		},
-		redirect: 'follow',
 	});
 
 	if (!pageResponse.ok) {
@@ -122,6 +225,7 @@ async function fetchArticleImage(slug, sourceUrl, imageRights = 'source_thumbnai
 	const outPath = join(OUT_DIR, `${slug}${ext}`);
 
 	try {
+		await assertSafeUrl(imageUrl);
 		const buffer = await downloadImage(imageUrl);
 		await saveThumbnail(buffer, outPath);
 
@@ -150,6 +254,11 @@ if (!slug || !sourceUrl) {
 	process.exit(1);
 }
 
-const result = await fetchArticleImage(slug, sourceUrl, imageRights);
-console.log(JSON.stringify(result, null, 2));
-process.exit(result.ok ? 0 : 2);
+try {
+	const result = await fetchArticleImage(slug, sourceUrl, imageRights);
+	console.log(JSON.stringify(result, null, 2));
+	process.exit(result.ok ? 0 : 2);
+} catch (error) {
+	console.error(error instanceof Error ? error.message : String(error));
+	process.exit(1);
+}
