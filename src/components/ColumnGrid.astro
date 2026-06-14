@@ -1,0 +1,17 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+
+interface Props {
+	articles: CollectionEntry<'news'>[];
+	variant?: 'default' | 'compact';
+}
+
+const { articles, variant = 'default' } = Astro.props;
+---
+
+<div class="front-page__main-grid">
+	{articles.map((article) => (
+		<ArticleCard article={article} variant={variant} />
+	))}
+</div>

@@ -1,0 +1,34 @@
+---
+description: Checklist ปฏิบัติตามกฎหมายลิขสิทธิ์ก่อนเผยแพร่ข่าว PAGES 1 NEWS
+globs: src/content/news/**/*.md
+alwaysApply: false
+---
+
+# Legal Compliance Checklist
+
+ก่อนเผยแพร่ข่าวแต่ละเรื่อง ตรวจสอบ:
+
+- [ ] มี `sourceName` + `sourceUrl` ถูกต้อง ลิงก์ไปบทความต้นฉบับได้
+- [ ] Body ไม่เกิน ~3 ย่อหน้า / ไม่คัดลอกทั้งบทความ
+- [ ] `rightsModel` เป็น `excerpt_only`
+- [ ] `author` ระบุผู้รายงานต้นทาง ไม่ใช่ชื่อบรรณาธิการ PAGES 1 NEWS
+- [ ] รูปภาพเป็น local thumbnail หรือ placeholder (`imageRights: placeholder`)
+- [ ] `imageCredit` บังคับเมื่อใช้รูปจริง (`imageRights` ไม่ใช่ placeholder)
+- [ ] `imageSourceUrl` ระบุ URL รูปต้นฉบับเมื่อดาวน์โหลดสำเร็จ
+- [ ] ไม่แก้ความหมายข่าวต้นทาง
+- [ ] หน้ารายละเอียดมี disclaimer + ปุ่มอ่านต้นฉบับ (จัดการโดย UI อัตโนมัติ)
+- [ ] ตรวจ ToS ของแหล่งข่าว (บางเว็บห้าม scrape)
+
+## หน้ากฎหมาย
+
+- `/legal/disclaimer/` — ข้อจำกัดความรับผิดชอบ
+- `/legal/copyright/` — นโยบายลิขสิทธิ์
+- `/legal/takedown/` — แจ้งลบเนื้อหา
+
+## สิ่งที่ห้ามทำ
+
+- คัดลอกเนื้อหาเต็มแล้วใส่ disclaimer
+- อ้างสิทธิ์เป็นเจ้าของเนื้อหาข่าวจากสำนักข่าวอื่น
+- Hotlink รูปจาก CDN สำนักข่าวโดยตรง
+- ใช้รูปความละเอียดเต็มโดยไม่ย่อเป็น thumbnail
+- แสดงรูปจริงโดยไม่มี `imageCredit`

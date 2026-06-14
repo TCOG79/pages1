@@ -1,0 +1,58 @@
+---
+interface Props {
+	src: string;
+	alt: string;
+	width?: number;
+	height?: number;
+	loading?: 'eager' | 'lazy';
+	class?: string;
+	imageCredit?: string;
+	imageLinkUrl?: string;
+}
+
+const {
+	src,
+	alt,
+	width,
+	height,
+	loading = 'lazy',
+	class: className,
+	imageCredit,
+	imageLinkUrl,
+} = Astro.props;
+
+const imgAttrs = {
+	class: className,
+	src,
+	alt,
+	loading,
+	decoding: 'async' as const,
+	...(width !== undefined && { width }),
+	...(height !== undefined && { height }),
+};
+---
+
+<figure class="article-image">
+	{
+		imageLinkUrl ? (
+			<a href={imageLinkUrl} target="_blank" rel="noopener noreferrer">
+				<img {...imgAttrs} />
+			</a>
+		) : (
+			<img {...imgAttrs} />
+		)
+	}
+	{
+		imageCredit && (
+			<figcaption class="article-image__credit">
+				{imageLinkUrl ? (
+					<a href={imageLinkUrl} target="_blank" rel="noopener noreferrer">
+						{imageCredit}
+					</a>
+				) : (
+					imageCredit
+				)}
+			</figcaption>
+		)
+	}
+</figure>

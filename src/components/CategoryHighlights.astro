@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+
+interface Props {
+	articles: CollectionEntry<'news'>[];
+}
+
+const { articles } = Astro.props;
+---
+
+{
+	articles.length > 0 && (
+		<section class="category-highlights" aria-label="ข่าวครบทุกหมวด">
+			<h2 class="section-heading">ข่าวครบทุกหมวด</h2>
+			<div class="category-highlights__grid">
+				{articles.map((article) => (
+					<ArticleCard article={article} variant="compact" />
+				))}
+			</div>
+		</section>
+	)
+}

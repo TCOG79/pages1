@@ -1,0 +1,24 @@
+---
+import { SITE_NAME } from '../config/site';
+
+interface Props {
+	sourceName: string;
+	sourceUrl: string;
+}
+
+const { sourceName, sourceUrl } = Astro.props;
+---
+
+<footer class="source-attribution">
+	<p>
+		<strong>ที่มา:</strong>
+		<a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName}</a>
+	</p>
+	<p class="source-attribution__notice">
+		ลิขสิทธิ์เนื้อหาบทความฉบับเต็มเป็นของสำนักข่าวต้นทาง
+		{SITE_NAME} แสดงเฉพาะการสรุปย่อเพื่อการรายงานข่าว
+		<a href="/legal/copyright/">นโยบายลิขสิทธิ์</a>
+		&middot;
+		<a href="/legal/takedown/">แจ้งลบเนื้อหา</a>
+	</p>
+</footer>

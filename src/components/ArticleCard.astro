@@ -1,0 +1,49 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleImage from './ArticleImage.astro';
+import { formatThaiShortDate } from '../utils/format';
+
+interface Props {
+	article: CollectionEntry<'news'>;
+	variant?: 'default' | 'compact' | 'horizontal';
+}
+
+const { article, variant = 'default' } = Astro.props;
+const { title, excerpt, category, image, publishedAt } = article.data;
+const slug = article.id;
+---
+
+<article
+	class:list={[
+		'article-card',
+		{ 'article-card--compact': variant === 'compact', 'article-card--horizontal': variant === 'horizontal' },
+	]}
+>
+	<a class="article-card__link" href={`/news/${slug}/`} data-astro-prefetch>
+		{variant !== 'compact' ? (
+			<ArticleImage
+				src={image}
+				alt={title}
+				width={400}
+				height={267}
+				loading="lazy"
+				class="article-card__image"
+			/>
+		) : (
+			<ArticleImage
+				src={image}
+				alt={title}
+				width={80}
+				height={80}
+				loading="lazy"
+				class="article-card__image article-card__image--thumb"
+			/>
+		)}
+		<div class="article-card__body">
+			<span class="category">{category}</span>
+			<h3 class="article-card__title">{title}</h3>
+			{variant !== 'compact' && <p class="article-card__excerpt">{excerpt}</p>}
+			<p class="article-card__meta">{formatThaiShortDate(publishedAt)}</p>
+		</div>
+	</a>
+</article>

@@ -1,0 +1,98 @@
+---
+import '../styles/global.css';
+import JsonLd from '../components/JsonLd.astro';
+import { DEFAULT_OG_IMAGE, GA4_ID, SITE_NAME } from '../config/site';
+import { absoluteUrl } from '../utils/seo';
+
+interface Props {
+	title: string;
+	description?: string;
+	canonicalUrl?: string;
+	alternateUrl?: string;
+	ogImage?: string;
+	ogType?: 'website' | 'article';
+	noindex?: boolean;
+	jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+	title,
+	description = 'ข่าวสารรายวัน อัปเดตทุกวัน',
+	canonicalUrl,
+	alternateUrl,
+	ogImage = DEFAULT_OG_IMAGE,
+	ogType = 'website',
+	noindex = false,
+	jsonLd,
+} = Astro.props;
+
+const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
+const pageUrl = canonicalUrl ?? absoluteUrl(Astro.url.pathname);
+const imageUrl = absoluteUrl(ogImage);
+---
+
+<!doctype html>
+<html lang="th">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		{noindex && <meta name="robots" content="noindex, follow" />}
+		<link rel="canonical" href={pageUrl} />
+		{alternateUrl && <link rel="alternate" href={alternateUrl} />}
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={imageUrl} />
+		<meta property="og:url" content={pageUrl} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:site_name" content={SITE_NAME} />
+		<meta property="og:locale" content="th_TH" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={fullTitle} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={imageUrl} />
+		<link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+		<link rel="apple-touch-icon" href="/favicon.png" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Serif+Thai:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<title>{fullTitle}</title>
+		{jsonLd && <JsonLd data={jsonLd} />}
+		{
+			GA4_ID && (
+				<>
+					<script async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} />
+					<script is:inline define:vars={{ gaId: GA4_ID }}>
+						window.dataLayer = window.dataLayer || [];
+						function gtag() {
+							dataLayer.push(arguments);
+						}
+						gtag('js', new Date());
+						gtag('config', gaId);
+					</script>
+				</>
+			)
+		}
+	</head>
+	<body>
+		<slot />
+		<footer class="site-footer">
+			<div class="container">
+				<nav class="site-footer__nav" aria-label="ลิงก์เว็บไซต์">
+					<a href="/archive/">คลังข่าว</a>
+					<a href="/legal/disclaimer/">ข้อจำกัดความรับผิดชอบ</a>
+					<a href="/legal/copyright/">นโยบายลิขสิทธิ์</a>
+					<a href="/legal/takedown/">แจ้งลบเนื้อหา</a>
+				</nav>
+				<div class="site-footer__brand">
+					<p class="site-footer__copy">
+						&copy; {new Date().getFullYear()} - {SITE_NAME}
+					</p>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
