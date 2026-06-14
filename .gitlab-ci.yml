@@ -1,0 +1,17 @@
+stages:
+  - audit
+
+variables:
+  NODE_VERSION: "22"
+
+audit:
+  stage: audit
+  image: node:${NODE_VERSION}-alpine
+  script:
+    - npm ci
+    - npm audit --audit-level=high
+    - npm run build
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/

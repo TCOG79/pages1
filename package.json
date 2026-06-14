@@ -19,5 +19,10 @@
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^6.4.5",
     "node-edge-tts": "^1.2.10"
+  },
+  "devDependencies": {
+    "@fontsource/newsreader": "^5.2.10",
+    "@fontsource/noto-sans-thai": "^5.2.8",
+    "@fontsource/noto-serif-thai": "^5.2.7"
   }
 }

@@ -1,3 +1,15 @@
+@import '@fontsource/noto-sans-thai/thai-400.css';
+@import '@fontsource/noto-sans-thai/thai-500.css';
+@import '@fontsource/noto-sans-thai/thai-600.css';
+@import '@fontsource/noto-sans-thai/thai-700.css';
+@import '@fontsource/noto-serif-thai/thai-400.css';
+@import '@fontsource/noto-serif-thai/thai-600.css';
+@import '@fontsource/noto-serif-thai/thai-700.css';
+@import '@fontsource/newsreader/400.css';
+@import '@fontsource/newsreader/400-italic.css';
+@import '@fontsource/newsreader/600.css';
+@import '@fontsource/newsreader/700.css';
+
 :root {
 	--color-paper: #faf7f4;
 	--color-paper-elevated: #fff;
