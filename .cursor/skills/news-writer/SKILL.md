@@ -20,8 +20,8 @@ description: เขียนและสร้างไฟล์ข่าว Mar
 4. **เนื้อหา body = สรุปสั้น 2–3 ย่อหน้า** ไม่คัดลอกบทความเต็ม
 5. ตั้ง `rightsModel: excerpt_only`
 6. ตรวจ `featured: true` — มีได้แค่ 1 เรื่องต่อวัน
-7. รัน `npm run generate-audio -- --id YYYY/MM/DD/{slug}` สร้างเสียงอ่าน (หรือ `npm run generate-audio` ถ้าไม่ระบุ id)
-8. รัน `npm run build` ตรวจ schema validation (prebuild จะ generate เสียงที่ยังไม่มีให้อัตโนมัติ)
+7. รัน `npm run fetch-image -- {slug} {sourceUrl}` (ถ้ายังไม่มีรูป)
+8. รัน **`npm run publish-edition`** — prebuild สร้างเสียง → build → auto push ขึ้น remote
 
 ## Frontmatter บังคับ
 
@@ -41,8 +41,10 @@ Optional: `imageCredit`, `originalAuthor`
 ## Workflow แนะนำ
 
 ```
-news-reader → news-summarizer → news-citation → news-writer → npm run generate-audio → npm run build
+news-reader → news-summarizer → news-citation → news-writer → fetch-image → npm run publish-edition
 ```
+
+ฉบับรายวัน: `.cursor/skills/news-edition/SKILL.md`
 
 ## เสียงอ่านข่าว
 

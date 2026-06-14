@@ -12,6 +12,8 @@
     "astro": "astro",
     "fetch-image": "node scripts/fetch-article-image.mjs",
     "generate-audio": "node scripts/generate-article-audio.mjs",
+    "publish-news": "node scripts/publish-news.mjs",
+    "publish-edition": "node scripts/publish-edition.mjs",
     "migrate-news-folders": "node scripts/migrate-news-to-date-folders.mjs",
     "prebuild": "npm run generate-audio"
   },
