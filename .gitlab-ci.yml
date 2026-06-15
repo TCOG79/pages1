@@ -10,7 +10,7 @@ audit:
   script:
     - npm ci
     - npm audit --audit-level=high
-    - npm run build
+    - npm run build:only
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:

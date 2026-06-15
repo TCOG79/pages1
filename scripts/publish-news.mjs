@@ -31,6 +31,7 @@ const DEPLOY_PATHSPECS = [
 	'.cursor',
 	'scripts',
 	'package.json',
+	'.gitlab-ci.yml',
 ];
 
 function runGit(args, options = {}) {
