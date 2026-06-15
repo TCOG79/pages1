@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:only": "node scripts/build-only.mjs",
+    "postbuild": "node scripts/postbuild-publish.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "fetch-image": "node scripts/fetch-article-image.mjs",

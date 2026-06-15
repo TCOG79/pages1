@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
- * Commit and push news-related changes only (content, images, audio, redirects).
+ * Commit and push deployable changes.
  *
  * Usage:
- *   node scripts/publish-news.mjs              # stage → commit → push
+ *   node scripts/publish-news.mjs              # news paths only → commit → push
+ *   node scripts/publish-news.mjs --deploy     # src + news assets + .cursor → push
  *   node scripts/publish-news.mjs --dry-run    # preview only
  *   node scripts/publish-news.mjs --no-push    # commit without push
  */
@@ -20,6 +21,16 @@ const NEWS_PATHSPECS = [
 	'public/images/news',
 	'public/audio/news',
 	'src/config/news-redirects.ts',
+];
+
+/** Paths included when publishing after a successful build */
+const DEPLOY_PATHSPECS = [
+	'src',
+	'public/images/news',
+	'public/audio/news',
+	'.cursor',
+	'scripts',
+	'package.json',
 ];
 
 function runGit(args, options = {}) {
@@ -44,7 +55,15 @@ function isGitRepo() {
 	}
 }
 
-function listChangedNewsFiles() {
+function matchesPathspec(file, pathspecs) {
+	return pathspecs.some((spec) =>
+		spec.endsWith('.ts') || spec.endsWith('.json')
+			? file === spec
+			: file.startsWith(`${spec}/`) || file === spec,
+	);
+}
+
+function listChangedFiles(pathspecs) {
 	const output = runGit(['status', '--porcelain', '--untracked-files=all']);
 	if (!output) return [];
 
@@ -52,11 +71,7 @@ function listChangedNewsFiles() {
 		.split('\n')
 		.filter(Boolean)
 		.map((line) => line.slice(3).trim())
-		.filter((file) =>
-			NEWS_PATHSPECS.some((spec) =>
-				spec.endsWith('.ts') ? file === spec : file.startsWith(`${spec}/`) || file === spec,
-			),
-		);
+		.filter((file) => matchesPathspec(file, pathspecs));
 }
 
 function getBangkokDateKey() {
@@ -76,22 +91,29 @@ function buildCommitMessage(files) {
 		return `feat(news): add ${slugs.length} articles for ${getBangkokDateKey()}\n\n${slugs.map((slug) => `- ${slug}`).join('\n')}`;
 	}
 
+	const hasSiteChanges = files.some(
+		(file) => file.startsWith('src/') && !file.startsWith('src/content/news/'),
+	);
+	if (hasSiteChanges) {
+		return `fix: update site for edition ${getBangkokDateKey()}`;
+	}
+
 	return `feat(news): update edition ${getBangkokDateKey()}`;
 }
 
-/** @returns {boolean} true if committed or pushed; false if nothing to do */
-export function publishNewsChanges(options = {}) {
+function publishChanges(pathspecs, options = {}) {
 	const dryRun = options.dryRun ?? false;
 	const noPush = options.noPush ?? false;
+	const label = options.label ?? 'changes';
 
 	if (!isGitRepo()) {
 		console.error('Not a git repository — skip publish.');
 		return false;
 	}
 
-	const files = listChangedNewsFiles();
+	const files = listChangedFiles(pathspecs);
 	if (files.length === 0) {
-		console.log('No news changes to publish.');
+		console.log(`No ${label} to publish.`);
 		return false;
 	}
 
@@ -108,7 +130,7 @@ export function publishNewsChanges(options = {}) {
 		return false;
 	}
 
-	for (const spec of NEWS_PATHSPECS) {
+	for (const spec of pathspecs) {
 		runGitInherit(['add', '--', spec]);
 	}
 
@@ -119,7 +141,7 @@ export function publishNewsChanges(options = {}) {
 	}
 
 	execFileSync('git', ['commit', '-m', message], { cwd: ROOT, stdio: 'inherit' });
-	console.log('Committed news changes.');
+	console.log(`Committed ${label}.`);
 
 	if (noPush) {
 		console.log('Skipped push (--no-push).');
@@ -131,9 +153,20 @@ export function publishNewsChanges(options = {}) {
 	return true;
 }
 
+/** @returns {boolean} true if committed or pushed; false if nothing to do */
+export function publishNewsChanges(options = {}) {
+	return publishChanges(NEWS_PATHSPECS, { ...options, label: 'news changes' });
+}
+
+/** postbuild — commit + push all deployable paths after successful build */
+export function publishDeployChanges(options = {}) {
+	return publishChanges(DEPLOY_PATHSPECS, { ...options, label: 'deploy changes' });
+}
+
 function main() {
 	const args = process.argv.slice(2);
-	publishNewsChanges({
+	const publish = args.includes('--deploy') ? publishDeployChanges : publishNewsChanges;
+	publish({
 		dryRun: args.includes('--dry-run'),
 		noPush: args.includes('--no-push'),
 	});

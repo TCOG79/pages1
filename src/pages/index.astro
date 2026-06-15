@@ -34,7 +34,7 @@ const allNews = (await getCollection('news')).sort(
 	(a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
 );
 
-const { articles: editionNews, editionDate, isToday } = getEditionArticles(allNews);
+const { articles: editionNews, editionDate } = getEditionArticles(allNews);
 
 const featured = editionNews.find((article) => article.data.featured);
 const leadStory = featured ?? editionNews[0];
@@ -69,22 +69,22 @@ const mainArticles = editionNews.filter((article) => !usedIds.has(article.id));
 	<main class="front-page">
 		<div class="container">
 			{
-				editionNews.length === 0 ? (
+				allNews.length === 0 ? (
 					<div class="front-page__empty">
 						<p>ยังไม่มีข่าวในระบบ</p>
 						<p>
 							<a href="/archive/">ดูคลังข่าวย้อนหลัง</a>
 						</p>
 					</div>
+				) : editionNews.length === 0 ? (
+					<div class="front-page__empty">
+						<p>ยังไม่มีข่าวประจำวันนี้ ({formatThaiDate(editionDate)})</p>
+						<p>
+							<a href="/archive/">ดูคลังข่าวย้อนหลัง</a>
+						</p>
+					</div>
 				) : (
 					<>
-						{
-							!isToday && (
-								<p class="front-page__edition-note">
-									ยังไม่มีข่าวประจำวันนี้ — แสดงข่าวล่าสุดวันที่ {formatThaiDate(editionDate)}
-								</p>
-							)
-						}
 						<div class="front-page__top">
 							<LeadStory article={leadStory} />
 							{
