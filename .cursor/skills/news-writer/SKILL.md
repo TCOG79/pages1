@@ -15,13 +15,13 @@ description: เขียนและสร้างไฟล์ข่าว Mar
 1. อ่าน template: [article-template.md](article-template.md)
 2. ดึงเนื้อหาจาก `sourceUrl` ผ่าน `news-reader`
 3. สร้างไฟล์ `src/content/news/YYYY/MM/DD/{slug}.md`
-   - โฟลเดอร์วันที่ derive จาก `publishedAt` (Asia/Bangkok) — ใช้ `getNewsFilePath` ใน `src/utils/news-path.ts`
+   - โฟลเดอร์วันที่ derive จาก **`publishedAt` = วันที่ต้นทางเผยแพร่จริง** (Asia/Bangkok) — ใช้ `getNewsFilePath` ใน `src/utils/news-path.ts`
    - slug = kebab-case ภาษาอังกฤษจากหัวข้อ
 4. **เนื้อหา body = สรุปสั้น 2–3 ย่อหน้า** ไม่คัดลอกบทความเต็ม
 5. ตั้ง `rightsModel: excerpt_only`
 6. ตรวจ `featured: true` — มีได้แค่ 1 เรื่องต่อวัน
 7. รัน `npm run fetch-image -- {slug} {sourceUrl}` (ถ้ายังไม่มีรูป)
-8. รัน **`npm run publish-edition`** — prebuild สร้างเสียง → build → auto push ขึ้น remote
+8. รัน **`npm run build`** — prebuild สร้างเสียง → build → postbuild auto push ขึ้น remote
 
 ## Frontmatter บังคับ
 
@@ -41,7 +41,7 @@ Optional: `imageCredit`, `originalAuthor`
 ## Workflow แนะนำ
 
 ```
-news-reader → news-summarizer → news-citation → news-writer → fetch-image → npm run publish-edition
+news-reader → news-summarizer → news-citation → news-writer → fetch-image → npm run build
 ```
 
 ฉบับรายวัน: `.cursor/skills/news-edition/SKILL.md`

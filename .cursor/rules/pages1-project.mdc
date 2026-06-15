@@ -14,7 +14,8 @@ alwaysApply: true
 
 ## โครงสร้างหลัก
 
-- ข่าว: `src/content/news/YYYY/MM/DD/{slug}.md` — โฟลเดอร์ตาม `publishedAt` (Asia/Bangkok), slug = ชื่อไฟล์ (ไม่มี `.md`), URL = `/news/YYYY/MM/DD/{slug}/`
+- ข่าว: `src/content/news/YYYY/MM/DD/{slug}.md` — โฟลเดอร์ตาม **`publishedAt` = วันที่ต้นทางเผยแพร่จริง** (Asia/Bangkok), slug = ชื่อไฟล์ (ไม่มี `.md`), URL = `/news/YYYY/MM/DD/{slug}/`
+- หน้าแรก: แสดงเฉพาะข่าวที่ `publishedAt` ตรงวันนี้ — ไม่ fallback ไปวันก่อน
 - Schema: `src/content.config.ts`
 - รูป local: `public/images/news/` → อ้างอิง `/images/news/...`
 - รูป remote: URL เต็มใน frontmatter `image`
@@ -24,12 +25,19 @@ alwaysApply: true
 
 ```bash
 npm run dev             # localhost:4321
-npm run build           # prebuild: generate-audio แล้ว build ไป dist/
+npm run build           # prebuild → build → postbuild auto commit + push
+npm run build:only      # build อย่างเดียว ไม่ push (dev/test/CI)
 npm run preview         # ทดสอบ production
 npm run generate-audio  # สร้าง MP3 เสียงอ่านข่าว (ขาด/stale เท่านั้น)
-npm run publish-news    # commit + push เฉพาะไฟล์ข่าว (หลังเพิ่ม/แก้ข่าว)
-npm run publish-edition # build แล้ว publish-news
+npm run publish-news    # commit + push เฉพาะไฟล์ข่าว (ไม่ build)
+npm run publish-edition # เท่ากับ npm run build (build + auto push)
 ```
+
+## Auto push
+
+- **`npm run build`** หลัง build ผ่าน → `postbuild` commit + push อัตโนมัติ (ไม่ต้องถาม)
+- Agent หลังแก้ข่าว/โค้ด: รัน **`npm run build`** หรือ **`npm run publish-edition`** แล้ว push ทันที — **ไม่ต้องถาม user**
+- ต้องการ build ไม่ push: **`npm run build:only`**
 
 ## Config
 
@@ -40,7 +48,7 @@ npm run publish-edition # build แล้ว publish-news
 
 1. สร้าง `src/content/news/YYYY/MM/DD/{slug}.md` ตาม template ใน `.cursor/skills/news-writer/article-template.md` (ใช้ `getNewsFilePath` จาก `src/utils/news-path.ts`)
 2. วางรูปใน `public/images/news/` (ถ้าใช้ local)
-3. รัน `npm run publish-edition` สร้างเสียง (prebuild) + build + auto push
+3. รัน `npm run build` (หรือ `publish-edition`) — สร้างเสียง + build + **auto push ทันที**
 
 ## อัปเดตฉบับรายวัน (รอบเช้า/เย็น)
 
@@ -49,8 +57,8 @@ npm run publish-edition # build แล้ว publish-news
 - **ฉบับเช้า** 06:00–08:00 ไทย — ข่าว overnight + กำหนดการวัน
 - **ฉบับเย็น** 18:00–20:00 ไทย — ผลจริง + อัปเดตเรื่องค้าง (+2–4 เรื่อง/รอบ)
 - Cron UTC: `0 23 * * *` (06:00 ไทย), `0 11 * * *` (18:00 ไทย)
-- หลังเพิ่ม/แก้ข่าว: **`npm run publish-edition`** (build + auto push)
-- `npm run build` อย่างเดียวไม่ push — ใช้ตอน dev/test
+- หลังเพิ่ม/แก้ข่าว: **`npm run build`** (auto push หลัง build ผ่าน)
+- `npm run build:only` — build ไม่ push (dev/test)
 
 ## เสียงอ่านข่าว
 

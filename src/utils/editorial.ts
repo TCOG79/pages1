@@ -1,6 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { NEWS_CATEGORIES, type NewsCategory } from '../config/categories';
-import { getCalendarDateKey, isSameCalendarDay } from './format';
+import { isSameCalendarDay } from './format';
 
 export type EditionResult = {
 	articles: CollectionEntry<'news'>[];
@@ -8,36 +8,19 @@ export type EditionResult = {
 	isToday: boolean;
 };
 
-/** ข่าวฉบับวัน — ถ้าวันนี้ยังไม่มีข่าว ใช้วันล่าสุดที่มีในระบบ */
+/** ข่าวฉบับวัน — หน้าแรกแสดงเฉพาะข่าวที่ publishedAt ตรงวันอ้างอิง (Asia/Bangkok) */
 export function getEditionArticles(
 	allNews: CollectionEntry<'news'>[],
 	referenceDate = new Date(),
 ): EditionResult {
-	if (allNews.length === 0) {
-		return { articles: [], editionDate: referenceDate, isToday: false };
-	}
-
 	const todayArticles = allNews.filter((article) =>
 		isSameCalendarDay(article.data.publishedAt, referenceDate),
 	);
 
-	if (todayArticles.length > 0) {
-		return {
-			articles: todayArticles,
-			editionDate: referenceDate,
-			isToday: true,
-		};
-	}
-
-	const latestDateKey = getCalendarDateKey(allNews[0].data.publishedAt);
-	const latestArticles = allNews.filter(
-		(article) => getCalendarDateKey(article.data.publishedAt) === latestDateKey,
-	);
-
 	return {
-		articles: latestArticles,
-		editionDate: allNews[0].data.publishedAt,
-		isToday: false,
+		articles: todayArticles,
+		editionDate: referenceDate,
+		isToday: todayArticles.length > 0,
 	};
 }
 

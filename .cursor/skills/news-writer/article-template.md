@@ -55,7 +55,7 @@ npm run fetch-image -- slug-name https://example.com/article source_thumbnail
 - [ ] body สรุป 2-3 ย่อหน้า ไม่ใช่เนื้อหาเต็ม
 - [ ] rightsModel: excerpt_only
 - [ ] รูป local + imageCredit หรือ placeholder + imageRights: placeholder
-- [ ] featured มีไม่เกิน 1 เรื่องต่อวัน
+- [ ] publishedAt ตรงวันที่ต้นทางเผยแพร่จริง (ไม่ใช่วันที่ดึงฉบับ)
 - [ ] npm run build ผ่าน
 ```
 
