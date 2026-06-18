@@ -45,4 +45,4 @@
 
 - Automation ต้องรันใน repo ที่ commit skill นี้แล้ว
 - ไม่ commit `.env` หรือ secrets
-- Deploy แยก (GitLab CI / manual) หลัง agent commit ข่าว — หรือให้ pipeline build เมื่อ push
+- Push ตรง `main` หลัง `npm run build` — Vercel deploy อัตโนมัติ; CI รัน build เมื่อ push (`.github/workflows/ci.yml`)

@@ -7,6 +7,9 @@
  *   node scripts/publish-news.mjs --deploy     # src + news assets + .cursor → push
  *   node scripts/publish-news.mjs --dry-run    # preview only
  *   node scripts/publish-news.mjs --no-push    # commit without push
+ *
+ * Env:
+ *   PAGES1_PUSH_BRANCH=main   # default — push straight to main (no PR)
  */
 
 import { execFileSync } from 'node:child_process';
@@ -32,6 +35,8 @@ const DEPLOY_PATHSPECS = [
 	'scripts',
 	'package.json',
 	'.gitlab-ci.yml',
+	'.github',
+	'vercel.json',
 ];
 
 function runGit(args, options = {}) {
@@ -149,8 +154,9 @@ function publishChanges(pathspecs, options = {}) {
 		return true;
 	}
 
-	execFileSync('git', ['push', 'origin', 'HEAD'], { cwd: ROOT, stdio: 'inherit' });
-	console.log(`Pushed to origin/${branch}.`);
+	const pushBranch = process.env.PAGES1_PUSH_BRANCH || 'main';
+	execFileSync('git', ['push', 'origin', `HEAD:${pushBranch}`], { cwd: ROOT, stdio: 'inherit' });
+	console.log(`Pushed to origin/${pushBranch}.`);
 	return true;
 }
 

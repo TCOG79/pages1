@@ -1,0 +1,38 @@
+name: Publish
+
+# Manual publish: build + commit + push straight to main (no PR).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - run: npm ci
+
+      - name: Build and push to main
+        env:
+          PAGES1_CI_PUBLISH: 1
+          PAGES1_PUSH_BRANCH: main
+        run: npm run build

@@ -9,6 +9,7 @@ import { publishDeployChanges } from './publish-news.mjs';
 
 function getSkipPublishReason() {
 	if (process.env.PAGES1_SKIP_PUBLISH === '1') return 'PAGES1_SKIP_PUBLISH=1';
+	if (process.env.PAGES1_CI_PUBLISH === '1') return null;
 	if (process.env.VERCEL) return 'Vercel deploy';
 	if (process.env.CI) return 'CI environment';
 	return null;

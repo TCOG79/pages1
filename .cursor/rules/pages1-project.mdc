@@ -35,9 +35,11 @@ npm run publish-edition # เท่ากับ npm run build (build + auto push
 
 ## Auto push
 
-- **`npm run build`** หลัง build ผ่าน → `postbuild` commit + push อัตโนมัติ (ไม่ต้องถาม)
+- **`npm run build`** หลัง build ผ่าน → `postbuild` commit + **push ตรง `main`** (ไม่ผ่าน PR)
 - Agent หลังแก้ข่าว/โค้ด: รัน **`npm run build`** หรือ **`npm run publish-edition`** แล้ว push ทันที — **ไม่ต้องถาม user**
 - ต้องการ build ไม่ push: **`npm run build:only`**
+- Override branch: `PAGES1_PUSH_BRANCH=dev` (ค่าเริ่มต้น `main`)
+- Publish จาก GitHub Actions: workflow **Publish** (manual) หรือ `PAGES1_CI_PUBLISH=1`
 
 ## Config
 
