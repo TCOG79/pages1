@@ -4,7 +4,7 @@
  * Usage: node scripts/batch-import-edition.mjs 2026-06-21 2026-06-30
  */
 
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readdir, readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -63,7 +63,8 @@ const SLUG_KEYWORDS = [
 
 function toSlug(title, date, contentId) {
 	const day = date.slice(8, 10);
-	const month = date.slice(5, 7) === '06' ? 'june' : `m${date.slice(5, 7)}`;
+	const mo = date.slice(5, 7);
+	const month = mo === '06' ? 'june' : mo === '07' ? 'july' : `m${mo}`;
 	let base = '';
 	for (const [re, kw] of SLUG_KEYWORDS) {
 		if (re.test(title)) {
@@ -167,11 +168,44 @@ ${body}
 	};
 }
 
-async function importDay(date) {
-	console.log(`\n=== ${date} ===`);
+async function getExistingContentIds(date) {
+	const [y, m, d] = date.split('-');
+	const dir = join(ROOT, 'src/content/news', y, m, d);
+	let files = [];
+	try {
+		files = (await readdir(dir)).filter((f) => f.endsWith('.md'));
+	} catch {
+		return { ids: new Set(), count: 0 };
+	}
+	const ids = new Set();
+	for (const file of files) {
+		const m = file.match(/-c(\d+)\.md$/);
+		if (m) ids.add(m[1]);
+		const raw = await readFile(join(dir, file), 'utf8');
+		const url = raw.match(/^sourceUrl: "(.*)"/m)?.[1];
+		const id = url?.match(/(\d+)$/)?.[1];
+		if (id) ids.add(id);
+	}
+	return { ids, count: files.length };
+}
+
+async function importDay(date, { append = false, targetCount = 8 } = {}) {
+	console.log(`\n=== ${date}${append ? ' (append)' : ''} ===`);
+	const { ids: existingIds, count: existingCount } = append
+		? await getExistingContentIds(date)
+		: { ids: new Set(), count: 0 };
+	const need = append ? Math.max(0, targetCount - existingCount) : targetCount;
+
+	if (append && need === 0) {
+		console.log(`  already ${existingCount} articles, skip`);
+		return [];
+	}
+
 	const urls = await getArchiveUrls(date);
 	const articles = [];
 	for (const url of urls) {
+		const id = url.match(/(\d+)$/)?.[1];
+		if (existingIds.has(id)) continue;
 		try {
 			const a = await fetchArticle(url);
 			if (a) articles.push(a);
@@ -182,23 +216,18 @@ async function importDay(date) {
 	}
 
 	const selected = [];
-	const usedCats = new Set();
-	// priority: cover all target categories
 	for (const cat of TARGET_CATEGORIES) {
+		if (selected.length >= need) break;
 		const pick = articles.find((a) => a.category === cat && !selected.includes(a));
-		if (pick) {
-			selected.push(pick);
-			usedCats.add(cat);
-		}
+		if (pick) selected.push(pick);
 	}
-	// fill to 8 with remaining top articles
 	for (const a of articles) {
-		if (selected.length >= 8) break;
+		if (selected.length >= need) break;
 		if (!selected.includes(a)) selected.push(a);
 	}
 
 	if (selected.length === 0) {
-		console.log('  no articles');
+		console.log('  no new articles');
 		return [];
 	}
 
@@ -208,7 +237,8 @@ async function importDay(date) {
 	const written = [];
 	const usedSlugs = new Set();
 	for (let i = 0; i < selected.length; i++) {
-		const { slug, path, content } = buildMarkdown(selected[i], date, i === 0);
+		const featured = !append && i === 0;
+		const { slug, path, content } = buildMarkdown(selected[i], date, featured);
 		if (usedSlugs.has(slug)) continue;
 		usedSlugs.add(slug);
 		await writeFile(path, content, 'utf8');
@@ -232,10 +262,13 @@ function parseDates(start, end) {
 	return dates;
 }
 
-const [start = '2026-06-21', end = '2026-06-30'] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const append = args.includes('--append');
+const dateArgs = args.filter((a) => !a.startsWith('--'));
+const [start = '2026-06-21', end = '2026-06-30'] = dateArgs;
 const allWritten = [];
 for (const date of parseDates(start, end)) {
-	const w = await importDay(date);
+	const w = await importDay(date, { append });
 	allWritten.push(...w);
 }
 console.log(`\nTotal: ${allWritten.length} articles`);
