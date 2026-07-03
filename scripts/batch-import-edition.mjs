@@ -64,7 +64,8 @@ const SLUG_KEYWORDS = [
 function toSlug(title, date, contentId) {
 	const day = date.slice(8, 10);
 	const mo = date.slice(5, 7);
-	const month = mo === '06' ? 'june' : mo === '07' ? 'july' : `m${mo}`;
+	const month =
+		mo === '06' ? 'june' : mo === '07' ? 'july' : mo === '08' ? 'august' : `m${mo}`;
 	let base = '';
 	for (const [re, kw] of SLUG_KEYWORDS) {
 		if (re.test(title)) {
