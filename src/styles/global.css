@@ -506,6 +506,18 @@ h4 {
 	font-weight: 600;
 }
 
+.archive-page__pagination-ellipsis {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.5rem;
+	height: 2rem;
+	color: var(--color-muted);
+	font-size: 0.875rem;
+	letter-spacing: 0.05em;
+	user-select: none;
+}
+
 .archive-page__back {
 	margin: calc(var(--gap) * 1.5) 0 0;
 	text-align: center;

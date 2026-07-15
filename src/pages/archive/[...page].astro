@@ -6,6 +6,7 @@ import ArticleCard from '../../components/ArticleCard.astro';
 import Divider from '../../components/Divider.astro';
 import { NEWS_CATEGORIES_LABEL } from '../../config/categories';
 import { SITE_NAME } from '../../config/site';
+import { getPaginationItems } from '../../utils/pagination';
 
 export async function getStaticPaths({ paginate }) {
 	const allNews = (await getCollection('news')).sort(
@@ -17,6 +18,7 @@ export async function getStaticPaths({ paginate }) {
 
 const { page } = Astro.props;
 const articles = page.data;
+const paginationItems = getPaginationItems(page.currentPage, page.lastPage);
 
 function pageUrl(pageNumber: number) {
 	return pageNumber === 1 ? '/archive/' : `/archive/${pageNumber}/`;
@@ -73,20 +75,28 @@ function pageUrl(pageNumber: number) {
 
 						<div class="archive-page__pagination-pages">
 							{
-								Array.from({ length: page.lastPage }, (_, i) => i + 1).map((pageNumber) => (
-									pageNumber === page.currentPage ? (
+								paginationItems.map((item) =>
+									item === 'ellipsis' ? (
+										<span class="archive-page__pagination-ellipsis" aria-hidden="true">
+											…
+										</span>
+									) : item === page.currentPage ? (
 										<span
 											class="archive-page__pagination-page archive-page__pagination-page--current"
 											aria-current="page"
 										>
-											{pageNumber}
+											{item}
 										</span>
 									) : (
-										<a class="archive-page__pagination-page" href={pageUrl(pageNumber)}>
-											{pageNumber}
+										<a
+											class="archive-page__pagination-page"
+											href={pageUrl(item)}
+											aria-label={`ไปหน้า ${item}`}
+										>
+											{item}
 										</a>
-									)
-								))
+									),
+								)
 							}
 						</div>
 
