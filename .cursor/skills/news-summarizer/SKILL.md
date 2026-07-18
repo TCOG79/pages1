@@ -36,7 +36,7 @@ description: สร้าง excerpt และสรุป body 2-3 ย่อห
 ### แนะนำเพิ่ม
 
 - `category`: การเมือง | เศรษฐกิจ | กีฬา | บันเทิง | ไอที/เทคโนโลยี | ยานยนต์ | หวยไทย
-- แหล่งข่าวและเกณฑ์คัดเลือก: `src/config/news-sources.ts` — เลือกข่าวที่คนอ่าน/สนใจมาก
+- แหล่งข่าวและเกณฑ์คัดเลือก: `src/config/news-sources.ts` — เลือกข่าวที่คนอ่าน/สนใจมาก; หมวดไอทีใช้ **Blognone เป็นแหล่งหลัก**
 - `featured`: true/false
 - `rightsModel`: excerpt_only
 
