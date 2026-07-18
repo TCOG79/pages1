@@ -1,7 +1,14 @@
 import type { NewsCategory } from './categories';
 
 export interface NewsSourceGuide {
-	/** สำนักข่าวหลัก — มักมีข่าวที่คนอ่าน/แชร์เยอะ */
+	/**
+	 * แหล่งหลักของหมวด — ต้องเช็ก/เลือกก่อนแหล่งอื่นเสมอ
+	 * เมื่อมีข่าวของวันนั้นจากแหล่งนี้ ให้ใช้เป็นค่าเริ่มต้นของหมวด
+	 */
+	primary?: string;
+	/** URL หน้าหลักหรือรายการข่าวของแหล่งหลัก */
+	primaryUrl?: string;
+	/** สำนักข่าวสำรอง (เรียงตามความสำคัญรองลงมา) — รวม primary ไว้ตัวแรกด้วย */
 	sources: string[];
 	/** วิธีเลือกข่าวเข้าหน้า1 */
 	pickCriteria: string;
@@ -43,9 +50,11 @@ export const NEWS_SOURCES_BY_CATEGORY: Record<NewsCategory, NewsSourceGuide> = {
 		avoid: ['ข่าวซุบซิบไม่มีแหล่ง', 'โพสต์เดียวไม่มีการยืนยัน'],
 	},
 	'ไอที/เทคโนโลยี': {
+		primary: 'Blognone',
+		primaryUrl: 'https://www.blognone.com/',
 		sources: ['Blognone', 'Techsauce', 'ไทยพีบีเอสไอที', 'ฐานเศรษฐกิจ'],
 		pickCriteria:
-			'เลือกข่าวที่คนใช้เทคโนโลยีสนใจ — AI, มือถือ, ซอฟต์แวร์ใหญ่, ไซเบอร์, startup, งาน WWDC/COMPUTEX',
+			'แหล่งหลักคือ Blognone — ดึง/คัดข่าว IT จาก Blognone ก่อนเสมอ แล้วค่อยใช้แหล่งสำรองเมื่อวันนั้นไม่มีเรื่องเด่นจาก Blognone เลือกข่าวที่คนใช้เทคโนโลยีสนใจ — AI, มือถือ, ซอฟต์แวร์ใหญ่, ไซเบอร์, startup, งาน WWDC/COMPUTEX',
 		avoid: ['ข่าวลือผลิตภัณฑ์', 'บทรีวิว affiliate'],
 	},
 	ยานยนต์: {
