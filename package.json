@@ -28,5 +28,9 @@
     "@fontsource/newsreader": "^5.2.10",
     "@fontsource/noto-sans-thai": "^5.2.8",
     "@fontsource/noto-serif-thai": "^5.2.7"
+  },
+  "overrides": {
+    "sharp": "^0.35.0",
+    "esbuild": "^0.28.1"
   }
 }
