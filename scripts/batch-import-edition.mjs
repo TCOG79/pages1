@@ -64,7 +64,8 @@ const SLUG_KEYWORDS = [
 function toSlug(title, date, contentId) {
 	const day = date.slice(8, 10);
 	const mo = date.slice(5, 7);
-	const month = mo === '06' ? 'june' : mo === '07' ? 'july' : `m${mo}`;
+	const month =
+		mo === '06' ? 'june' : mo === '07' ? 'july' : mo === '08' ? 'aug' : `m${mo}`;
 	let base = '';
 	for (const [re, kw] of SLUG_KEYWORDS) {
 		if (re.test(title)) {
@@ -145,6 +146,13 @@ function buildMarkdown(article, date, featured) {
 	const slug = toSlug(article.title, date, article.contentId);
 	const body = article.paragraphs.join('\n\n');
 	const excerpt = article.description.slice(0, 200);
+	const imageMeta = article.image
+		? `image: "/images/news/${slug}.jpg"
+imageCredit: "ภาพ: ไทยพีบีเอส"
+imageSourceUrl: "${article.image}"
+imageRights: source_thumbnail`
+		: `image: "https://picsum.photos/seed/${slug}/800/500"
+imageRights: placeholder`;
 
 	return {
 		slug,
@@ -154,8 +162,7 @@ title: "${article.title.replace(/"/g, '\\"')}"
 excerpt: "${excerpt.replace(/"/g, '\\"')}"
 category: "${article.category}"
 featured: ${featured}
-image: "/images/news/${slug}.jpg"
-imageCredit: "ภาพ: ไทยพีบีเอส"
+${imageMeta}
 sourceName: "ไทยพีบีเอส"
 sourceUrl: "${article.url}"
 publishedAt: ${date}
