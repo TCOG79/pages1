@@ -3,7 +3,7 @@ title: "อัปเดตพายุโซนร้อน &quot;นาร์�
 excerpt: ""
 category: "การเมือง"
 featured: false
-image: "https://picsum.photos/seed/storm-power-pole-aug-24-c509801/800/500"
+image: "/images/politics.svg"
 imageRights: placeholder
 sourceName: "ไทยพีบีเอส"
 sourceUrl: "https://www.thaipbs.or.th/news/content/509801"

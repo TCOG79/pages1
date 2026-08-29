@@ -3,7 +3,7 @@ title: "TH-AI Passport ยอดลงทะเบียนทะลุ 1.13 ล
 excerpt: ""
 category: "การเมือง"
 featured: true
-image: "https://picsum.photos/seed/th-ai-passport-aug-21-c509733/800/500"
+image: "/images/politics.svg"
 imageRights: placeholder
 sourceName: "ไทยพีบีเอส"
 sourceUrl: "https://www.thaipbs.or.th/news/content/509733"
