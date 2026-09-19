@@ -3,7 +3,7 @@ title: "สภาพอากาศวันนี้ ภาคกลาง ก�
 excerpt: "วันนี้ (19 ก.ย.2569) กรมอุตุนิยมวิทยา พยากรณ์อากาศ 24 ชั่วโมงข้างหน้า ประเทศไทยมีฝนตกหนักบางแห่งโดยเฉพาะภาคกลาง รวมทั้งกรุงเทพฯ และปริมณฑล ส่วนภาคใต้มีฝนตกหนักมากบางพื้นที่"
 category: "เศรษฐกิจ"
 featured: false
-image: "https://picsum.photos/seed/heavy-rain-warning-m09-19-c558158/800/500"
+image: "/images/economy.svg"
 imageRights: placeholder
 sourceName: "ไทยพีบีเอส"
 sourceUrl: "https://www.thaipbs.or.th/news/content/558158"
