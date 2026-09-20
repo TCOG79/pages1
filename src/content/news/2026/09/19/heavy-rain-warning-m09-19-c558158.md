@@ -1,10 +1,12 @@
 ---
 title: "สภาพอากาศวันนี้ ภาคกลาง กทม.-ปริมณฑล ฝน 80% ตกหนักบางแห่ง"
-excerpt: "วันนี้ (19 ก.ย.2569) กรมอุตุนิยมวิทยา พยากรณ์อากาศ 24 ชั่วโมงข้างหน้า ประเทศไทยมีฝนตกหนักบางแห่งโดยเฉพาะภาคกลาง รวมทั้งกรุงเทพฯ และปริมณฑล ส่วนภาคใต้มีฝนตกหนักมากบางพื้นที่"
+excerpt: "กรมอุตุฯ เตือนภาคกลาง รวมทั้งกรุงเทพฯ และปริมณฑล มีฝนฟ้าคะนอง 80% ของพื้นที่และตกหนักบางแห่ง ส่วนภาคใต้บางพื้นที่ฝนตกหนักมาก ทะเลอันดามันคลื่นสูง 2-3 เมตร"
 category: "เศรษฐกิจ"
 featured: false
-image: "/images/economy.svg"
-imageRights: placeholder
+image: "/images/news/heavy-rain-warning-m09-19-c558158.jpg"
+imageCredit: "ภาพ: ไทยพีบีเอส"
+imageSourceUrl: "https://thaipbs-media-fuzzylop.thaipbs.or.th/imgpx1/unsafe/rt:fill/el:1/s:1200:630/q:90/aHR0cHM6Ly9vbmVjbXMudGhhaXBicy5vci50aC9tZWRpYS9xdHloSlJqQ0p1QllndU9uN080cXNQcDVsR0NPRDRHeEFGVnZiN0M5eVBPczZIREpKdFUxU3JULmpwZw==.jpg"
+imageRights: source_thumbnail
 sourceName: "ไทยพีบีเอส"
 sourceUrl: "https://www.thaipbs.or.th/news/content/558158"
 publishedAt: 2026-09-19
