@@ -103,6 +103,11 @@ async function needsRegeneration(sourcePath, outPath, force) {
 }
 
 async function main() {
+	if (process.env.VERCEL === '1') {
+		console.log('Skip generate-audio on Vercel (use MP3 committed in repo).');
+		return;
+	}
+
 	const { force, id } = parseArgs(process.argv.slice(2));
 	const markdownFiles = await collectMarkdownFiles(NEWS_DIR);
 
