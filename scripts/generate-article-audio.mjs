@@ -184,8 +184,12 @@ async function main() {
 
 	console.log(`Done — generated: ${generated}, skipped: ${skipped}, failed: ${failed}`);
 
+	// Do not fail the build when Edge TTS is unreachable (e.g. 403 from cloud IPs).
+	// Articles still publish; the listen button simply stays hidden until MP3s exist.
 	if (generated === 0 && failed > 0) {
-		process.exit(1);
+		console.warn(
+			`Warning: no audio generated (${failed} failed). Continuing without MP3 — retry later with npm run generate-audio.`,
+		);
 	}
 }
 
